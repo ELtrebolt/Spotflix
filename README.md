@@ -75,9 +75,9 @@ The name of star is generated as a link to Single Star page.
 
 - `SingleStarServlet.java` is a Java servlet that talks to the database and get information about one Star and all the movie this Star performed. It returns a list of Movies in the JSON format. 
 
-- `single-star.js` is the Javascript file that initiates an HTTP GET request to the `SingleStarServlet`. After the response is returned, `single-star.js` populates the table using the data it gets.
+- `single-song.js` is the Javascript file that initiates an HTTP GET request to the `SingleStarServlet`. After the response is returned, `single-song.js` populates the table using the data it gets.
 
-- `single-star.html` is the HTML file that imports jQuery, Bootstrap, and `single-star.js`. It also contains the initial skeleton for the movies table.
+- `single-star.html` is the HTML file that imports jQuery, Bootstrap, and `single-song.js`. It also contains the initial skeleton for the movies table.
 
 ### Separating frontend and backend
 - For project 1, you are recommended to separate frontend and backend. Backend Java Servlet only provides API in JSON format. Frontend Javascript code fetches the data through HTTP (ajax) requests and then display the data on the webpage. 

@@ -5,6 +5,7 @@
     <artifactId>cs122b-project1-api-example</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
+
     <dependencies>
         <dependency>
             <groupId>mysql</groupId>
@@ -23,8 +24,9 @@
             <version>2.10.1</version>
         </dependency>
     </dependencies>
+
     <build>
-        <finalName>cs122b-project1-api-example</finalName>
+        <finalName>project1</finalName>
         <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>

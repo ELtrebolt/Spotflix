@@ -38,33 +38,32 @@ function getParameterByName(target) {
 
 function handleResult(resultData) {
 
-    console.log("handleResult: populating star info from resultData");
+    console.log("handleResult: populating song info from resultData");
 
-    // populate the star info h3
-    // find the empty h3 body by id "star_info"
-    let starInfoElement = jQuery("#star_info");
+    // populate the song info h3
+    // find the empty h3 body by id "song_info"
+    let songInfoElement = jQuery("#song_info");
 
     // append two html <p> created to the h3 body, which will refresh the page
-    starInfoElement.append("<p>Star Name: " + resultData[0]["star_name"] + "</p>" +
-        "<p>Date Of Birth: " + resultData[0]["star_dob"] + "</p>");
+    songInfoElement.append("<p>Song Title: " + resultData[0]["song_title"] + "</p>" +
+        "<p>Album: " + resultData[0]["song_album"] + "</p>" +
+        "<p>Date Liked: " + resultData[0]["song_dateLiked"] + "</p>");
 
-    console.log("handleResult: populating movie table from resultData");
+    console.log("handleResult: populating artist table from resultData");
 
-    // Populate the star table
-    // Find the empty table body by id "movie_table_body"
-    let movieTableBodyElement = jQuery("#movie_table_body");
+    // Populate the song table
+    // Find the empty table body by id "artist_table_body"
+    let artistTableBodyElement = jQuery("#artist_table_body");
 
     // Concatenate the html tags with resultData jsonObject to create table rows
     for (let i = 0; i < Math.min(10, resultData.length); i++) {
         let rowHTML = "";
         rowHTML += "<tr>";
-        rowHTML += "<th>" + resultData[i]["movie_title"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
+        rowHTML += "<th>" + resultData[i]["artist_name"] + "</th>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
+        artistTableBodyElement.append(rowHTML);
     }
 }
 
@@ -73,12 +72,12 @@ function handleResult(resultData) {
  */
 
 // Get id from URL
-let starId = getParameterByName('id');
+let songId = getParameterByName('id');
 
 // Makes the HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({
     dataType: "json",  // Setting return data type
     method: "GET",// Setting request method
-    url: "api/single-star?id=" + starId, // Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    url: "api/single-song?id=" + songId, // Setting request url, which is mapped by SongsServlet in Songs.java
+    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleSongServlet
 });

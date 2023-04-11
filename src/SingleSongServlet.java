@@ -12,68 +12,87 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
+// Declaring a WebServlet called SingleSongServlet, which maps to url "/api/single-song"
+@WebServlet(name = "SingleSongServlet", urlPatterns = "/api/single-song")
+public class SingleSongServlet extends HttpServlet {
+    private static final long serialVersionUID = 2L;
 
-// Declaring a WebServlet called StarsServlet, which maps to url "/api/stars"
-@WebServlet(name = "StarsServlet", urlPatterns = "/api/stars")
-public class StarsServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-
-    // Create a dataSource which registered in web.
+    // Create a dataSource which registered in web.xml
     private DataSource dataSource;
 
     public void init(ServletConfig config) {
         try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/espotify");
         } catch (NamingException e) {
             e.printStackTrace();
         }
     }
 
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+     * response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         response.setContentType("application/json"); // Response mime type
+
+        // Retrieve parameter id from url request.
+        String id = request.getParameter("id");
+
+        // The log message can be found in localhost log
+        request.getServletContext().log("getting id: " + id);
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
+            // Get a connection from dataSource
+
+            // Construct a query with parameter represented by "?"
+            String query = "SELECT * from songs as s, artists_in_songs as ais, artists as a\n" +
+                            "WHERE a.id = ais.ArtistId and ais.SongId = s.Id and s.Id = ?";
 
             // Declare our statement
-            Statement statement = conn.createStatement();
+            PreparedStatement statement = conn.prepareStatement(query);
 
-            String query = "SELECT * from stars";
+            // Set the parameter represented by "?" in the query to the id we get from url,
+            // num 1 indicates the first "?" in the query
+            statement.setString(1, id);
 
             // Perform the query
-            ResultSet rs = statement.executeQuery(query);
+            ResultSet rs = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
             // Iterate through each row of rs
             while (rs.next()) {
-                String star_id = rs.getString("id");
-                String star_name = rs.getString("name");
-                String star_dob = rs.getString("birthYear");
+
+                String songId = rs.getString("SongId");
+                String songTitle = rs.getString("Title");
+                String songAlbum = rs.getString("Album");
+                String songDateLiked = rs.getString("DateLiked");
+
+                String artistId = rs.getString("ArtistId");
+                String artistName = rs.getString("Name");
 
                 // Create a JsonObject based on the data we retrieve from rs
+
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("star_id", star_id);
-                jsonObject.addProperty("star_name", star_name);
-                jsonObject.addProperty("star_dob", star_dob);
+                jsonObject.addProperty("song_id", songId);
+                jsonObject.addProperty("song_title", songTitle);
+                jsonObject.addProperty("song_album", songAlbum);
+                jsonObject.addProperty("song_dateLiked", songDateLiked);
+                jsonObject.addProperty("artist_id", artistId);
+                jsonObject.addProperty("artist_name", artistName);
 
                 jsonArray.add(jsonObject);
             }
             rs.close();
             statement.close();
-
-            // Log to localhost log
-            request.getServletContext().log("getting " + jsonArray.size() + " results");
 
             // Write JSON string to output
             out.write(jsonArray.toString());
@@ -81,12 +100,13 @@ public class StarsServlet extends HttpServlet {
             response.setStatus(200);
 
         } catch (Exception e) {
-
             // Write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("errorMessage", e.getMessage());
             out.write(jsonObject.toString());
 
+            // Log error to localhost log
+            request.getServletContext().log("Error:", e);
             // Set response status to 500 (Internal Server Error)
             response.setStatus(500);
         } finally {
@@ -96,4 +116,5 @@ public class StarsServlet extends HttpServlet {
         // Always remember to close db connection after usage. Here it's done by try-with-resources
 
     }
+
 }
