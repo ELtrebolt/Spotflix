@@ -42,34 +42,34 @@ function handleResult(resultData) {
 
     // populate the song info h3
     // find the empty h3 body by id "song_info"
-    let songInfoElement = jQuery("#song_info");
+    let artistInfoElement = jQuery("#artist_info");
 
     // append two html <p> created to the h3 body, which will refresh the page
-    songInfoElement.append("<p>Song Title: " + resultData[0]["song_title"] + "</p>" +
-        "<p>Rank: " + resultData[0]["song_rank"] + "</p>" +
-        "<p>Album: " + resultData[0]["song_album"] + "</p>" +
-        "<p>Date Liked: " + resultData[0]["song_dateLiked"] + "</p>");
+    artistInfoElement.append("<p>Artist: " + resultData[0]["artist_name"] + "</p>" +
+        "<p>Genres: " + resultData[0]["genres"] + "</p>");
 
     console.log("handleResult: populating artist table from resultData");
 
     // Populate the song table
     // Find the empty table body by id "artist_table_body"
-    let artistTableBodyElement = jQuery("#artist_table_body");
+    let songTableBodyElement = jQuery("#song_table_body");
     // Concatenate the html tags with resultData jsonObject to create table rows
     for (let i = 0; i < Math.min(10, resultData.length); i++) {
+        console.log(resultData[i]);
         let rowHTML = "";
         rowHTML += "<tr>";
         rowHTML += "<th>" +
-            // Add a link to single-song.html with id passed with GET url parameter
-            '<a href="single-artist.html?id=' + resultData[i]['artist_id'] + '">'
-            + resultData[i]["artist_name"] +     // display song_title for the link text
-            '</a>' +
-            "</th>";
-        rowHTML += "<th>" + resultData[i]["genres"] + "</th>";
+                    // Add a link to single-song.html with id passed with GET url parameter
+                    '<a href="single-song.html?id=' + resultData[i]['song_id'] + '">'
+                    + resultData[i]["song_title"] +     // display song_title for the link text
+                    '</a>' +
+                    "</th>";
+        rowHTML += "<th>" + resultData[i]["song_album"] + "</th>";
+        rowHTML += "<th>" + resultData[i]["song_dateLiked"] + "</th>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
-        artistTableBodyElement.append(rowHTML);
+        songTableBodyElement.append(rowHTML);
     }
 }
 
@@ -78,12 +78,12 @@ function handleResult(resultData) {
  */
 
 // Get id from URL
-let songId = getParameterByName('id');
+let artistId = getParameterByName('id');
 
 // Makes the HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({
     dataType: "json",  // Setting return data type
     method: "GET",// Setting request method
-    url: "api/single-song?id=" + songId, // Setting request url, which is mapped by SongsServlet in Songs.java
+    url: "api/single-artist?id=" + artistId, // Setting request url, which is mapped by SongsServlet in Songs.java
     success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleSongServlet
 });

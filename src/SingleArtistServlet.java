@@ -16,8 +16,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 // Declaring a WebServlet called SingleSongServlet, which maps to url "/api/single-song"
-@WebServlet(name = "SingleSongServlet", urlPatterns = "/api/single-song")
-public class SingleSongServlet extends HttpServlet {
+@WebServlet(name = "SingleArtistServlet", urlPatterns = "/api/single-artist")
+public class SingleArtistServlet extends HttpServlet {
     private static final long serialVersionUID = 2L;
 
     // Create a dataSource which registered in web.xml
@@ -53,11 +53,10 @@ public class SingleSongServlet extends HttpServlet {
             // Get a connection from dataSource
 
             // Construct a query with parameter represented by "?"
-            String query = "SELECT s.*, a.Id as ArtistId, a.Name as Name, " +
-                            "(SELECT GROUP_CONCAT(DISTINCT Genre SEPARATOR ', ')) as Genres, ts.ShortRank as SongRank\n" +
-                                "FROM songs as s, artists as a, artists_in_songs as ais, genres_of_artists as goa, top_songs as ts\n" +
-                                "WHERE a.Id = ais.ArtistId and ais.SongId = s.Id and goa.ArtistId = ais.ArtistId and ts.Id = s.Id and s.Id = ?\n" +
-                                "GROUP BY a.Id;";
+            String query = "SELECT *, (SELECT GROUP_CONCAT(DISTINCT Genre SEPARATOR ', ')) as Genres\n" +
+                    "FROM songs as s, artists as a, artists_in_songs as ais, genres_of_artists as goa\n" +
+                    "WHERE a.Id = ais.ArtistId and ais.SongId = s.Id and goa.ArtistId = ais.ArtistId and a.Id = ?\n" +
+                    "GROUP BY s.Title;";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -74,11 +73,10 @@ public class SingleSongServlet extends HttpServlet {
             // Iterate through each row of rs
             while (rs.next()) {
 
-                String songId = rs.getString("Id");
+                String songId = rs.getString("SongId");
                 String songTitle = rs.getString("Title");
                 String songAlbum = rs.getString("Album");
                 String songDateLiked = rs.getString("DateLiked");
-                String songRank = rs.getString("songRank");
 
                 String artistId = rs.getString("ArtistId");
                 String artistName = rs.getString("Name");
@@ -94,7 +92,6 @@ public class SingleSongServlet extends HttpServlet {
                 jsonObject.addProperty("artist_id", artistId);
                 jsonObject.addProperty("artist_name", artistName);
                 jsonObject.addProperty("genres", genres);
-                jsonObject.addProperty("song_rank", songRank);
 
                 jsonArray.add(jsonObject);
             }

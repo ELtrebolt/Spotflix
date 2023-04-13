@@ -64,18 +64,20 @@ public class SongsServlet extends HttpServlet {
                     "      ) as ArtistGenres\n" +
                     "    ) AS TopGenres\n" +
                     "FROM (\n" +
-                    "    SELECT s.*, subquery.ArtistId, subquery.ArtistName\n" +
+                    "    SELECT s.*, subquery.ArtistId, subquery.ArtistName, subquery.SongRank\n" +
                     "    FROM (\n" +
-                    "      SELECT s.*, a.Id as ArtistId, a.Name as ArtistName,\n" +
+                    "      SELECT s.*, a.Id as ArtistId, a.Name as ArtistName, ts.ShortRank as SongRank,\n" +
                     "           ROW_NUMBER() OVER (PARTITION BY s.Id ORDER BY a.Id) AS row_num\n" +
                     "      FROM songs AS s\n" +
                     "      JOIN artists_in_songs AS ais ON s.Id = ais.SongId\n" +
                     "      JOIN artists AS a ON a.id = ais.ArtistId \n" +
+                    "      JOIN top_songs AS ts ON s.Id = ts.Id \n" +
                     "      ) as subquery\n" +
                     "  JOIN songs AS s ON s.Id = subquery.Id\n" +
                     "  WHERE row_num <= 3\n" +
                     " ) as subquery2\n" +
-                    "GROUP BY subquery2.Id\n";
+                    "GROUP BY subquery2.Id\n" +
+                    "ORDER BY subquery2.SongRank IS NULL, subquery2.SongRank ASC\n";
 
             // Perform the query
             ResultSet rs = statement.executeQuery(query);
@@ -88,8 +90,11 @@ public class SongsServlet extends HttpServlet {
                 String song_title = rs.getString("Title");
                 String song_album = rs.getString("Album");
                 String song_dateLiked = rs.getString("DateLiked");
+                String song_rank = rs.getString("SongRank");
+
                 String artist_names = rs.getString("ArtistNames");
                 String top_genres = rs.getString("TopGenres");
+                String artist_ids = rs.getString("ArtistIds");
 
                 // Create a JsonObject based on the data we retrieve from rs
                 JsonObject jsonObject = new JsonObject();
@@ -98,7 +103,9 @@ public class SongsServlet extends HttpServlet {
                 jsonObject.addProperty("song_album", song_album);
                 jsonObject.addProperty("song_dateLiked", song_dateLiked);
                 jsonObject.addProperty("artist_names", artist_names);
+                jsonObject.addProperty("artist_ids", artist_ids);
                 jsonObject.addProperty("top_genres", top_genres);
+                jsonObject.addProperty("song_rank", song_rank);
 
                 jsonArray.add(jsonObject);
             }

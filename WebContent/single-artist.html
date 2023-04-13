@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <title>Single Song</title>
+    <title>Single Artist</title>
 </head>
 <body>
 
@@ -35,22 +35,23 @@
     </div>
 </nav>
 
-<h1>Single Song Page</h1>
+<h1>Single Artist Page</h1>
 
-<!-- H3 body is left empty here, will be populated with the data retrieved with single-song.js -->
-<!-- single-song.js will find this html element by it's id "song_info" -->
-<h3 id="song_info"></h3>
-<table id=artist_table class="table table-striped">
+<!-- H3 body is left empty here, will be populated with the data retrieved with single-artist.js -->
+<!-- single-artist.js will find this html element by its id "artist-info" -->
+<h3 id="artist_info"></h3>
+<table id=song_table class="table table-striped">
     <thead>
     <tr>
-        <th>Artists</th>
-        <th>Genres</th>
+        <th>Song</th>
+        <th>Album</th>
+        <th>Date Liked</th>
     </tr>
     </thead>
 
     <!-- Table body is left empty here, will be populated with the data retrieved with single-song.js -->
     <!-- single-song.js will find this html element by its id "artist_table_body" -->
-    <tbody id=artist_table_body></tbody>
+    <tbody id=song_table_body></tbody>
 </table>
 
 <!-- Load jQuery and Bootstrap JS -->
@@ -62,7 +63,7 @@
 <!-- The path is relative to single-song.html, since these two files are in the same directory -->
 <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
      otherwise the url is relative to the root path-->
-<script src="single-song.js"></script>
+<script src="single-artist.js"></script>
 </body>
 
 

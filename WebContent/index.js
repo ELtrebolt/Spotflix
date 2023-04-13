@@ -19,13 +19,17 @@ function handleSongResult(resultData) {
     // Populate the song table
     // Find the empty table body by id "song_table_body"
     let songTableBodyElement = jQuery("#song_table_body");
-
+    console.log(resultData.length)
     // Iterate through resultData, no more than N entries
-    for (let i = 0; i < Math.min(150, resultData.length); i++) {
+    for (let i = 0; i < Math.min(20, resultData.length); i++) {
+        console.log(i)
+        const artist_ids = resultData[i]['artist_ids'].split(', ');
+        const artist_names = resultData[i]['artist_names'].split(', ');
 
         // Concatenate the html tags with resultData jsonObject
         let rowHTML = "";
         rowHTML += "<tr>";
+        rowHTML += "<th>" + resultData[i]["song_rank"] + "</th>";
         rowHTML +=
             "<th>" +
             // Add a link to single-song.html with id passed with GET url parameter
@@ -35,7 +39,25 @@ function handleSongResult(resultData) {
             "</th>";
         rowHTML += "<th>" + resultData[i]["song_album"] + "</th>";
         rowHTML += "<th>" + resultData[i]["song_dateLiked"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["artist_names"] + "</th>";
+        rowHTML += "<th>";
+
+        artist_ids.forEach((id, index) => {
+            const artist_name = artist_names[index];
+            // Add a link to single-artist.html with id passed with GET url parameter
+            rowHTML += '<a href="single-artist.html?id=' + artist_ids[index] + '">'
+                        + artist_name + '</a>'    // display artist_name for the link text
+
+            if (index !== artist_ids.length - 1) {
+                rowHTML += ', '
+            }
+        });
+
+        rowHTML += "</th>";
+            // Add a link to single-song.html with id passed with GET url parameter
+            // '<a href="single-artist.html?id=' + resultData[i]['artist_ids'] + '">'
+            // + resultData[i]["artist_names"] +     // display artist_name for the link text
+            // '</a>' +
+            // "</th>";
         rowHTML += "<th>" + resultData[i]["top_genres"] + "</th>";
         rowHTML += "</tr>";
 
