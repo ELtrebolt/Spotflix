@@ -14,22 +14,22 @@
  * @param resultData jsonObject
  */
 function handleSongResult(resultData) {
-    console.log("handleSongResult: populating song table from resultData");
+    // console.log("handleSongResult: populating song table from resultData");
 
     // Populate the song table
     // Find the empty table body by id "song_table_body"
     let songTableBodyElement = jQuery("#song_table_body");
-    console.log(resultData.length)
+    // console.log(resultData.length)
     // Iterate through resultData, no more than N entries
     for (let i = 0; i < Math.min(20, resultData.length); i++) {
-        console.log(i)
+        // console.log(i)
         const artist_ids = resultData[i]['artist_ids'].split(', ');
         const artist_names = resultData[i]['artist_names'].split(', ');
 
         // Concatenate the html tags with resultData jsonObject
         let rowHTML = "";
         rowHTML += "<tr>";
-        rowHTML += "<th>" + resultData[i]["song_rank"] + "</th>";
+        rowHTML += "<th>" + resultData[i]["short_rank"] + "</th>";
         rowHTML +=
             "<th>" +
             // Add a link to single-song.html with id passed with GET url parameter

@@ -53,10 +53,16 @@ public class SingleArtistServlet extends HttpServlet {
             // Get a connection from dataSource
 
             // Construct a query with parameter represented by "?"
-            String query = "SELECT *, (SELECT GROUP_CONCAT(DISTINCT Genre SEPARATOR ', ')) as Genres\n" +
-                    "FROM songs as s, artists as a, artists_in_songs as ais, genres_of_artists as goa\n" +
-                    "WHERE a.Id = ais.ArtistId and ais.SongId = s.Id and goa.ArtistId = ais.ArtistId and a.Id = ?\n" +
-                    "GROUP BY s.Title;";
+            String query = "SELECT s.*, a.Id AS ArtistId, a.Name AS Name, ts.ShortRank AS ShortRank,\n" +
+                    "   GROUP_CONCAT(DISTINCT goa.Genre SEPARATOR ', ') AS Genres\n" +
+                    "FROM artists AS a\n" +
+                    "JOIN artists_in_songs AS ais ON ais.ArtistId = a.Id\n" +
+                    "JOIN songs AS s ON s.Id = ais.SongId\n" +
+                    "LEFT JOIN genres_of_artists AS goa ON a.Id = goa.ArtistId\n" +
+                    "LEFT JOIN top_songs AS ts ON  ts.Id = s.Id\n" +
+                    "WHERE a.Id = ?\n" +
+                    "GROUP BY s.Title\n" +
+                    "ORDER BY ts.ShortRank IS NULL, ts.ShortRank ASC, s.DateLiked ASC\n";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -73,7 +79,7 @@ public class SingleArtistServlet extends HttpServlet {
             // Iterate through each row of rs
             while (rs.next()) {
 
-                String songId = rs.getString("SongId");
+                String songId = rs.getString("Id");
                 String songTitle = rs.getString("Title");
                 String songAlbum = rs.getString("Album");
                 String songDateLiked = rs.getString("DateLiked");
@@ -81,6 +87,7 @@ public class SingleArtistServlet extends HttpServlet {
                 String artistId = rs.getString("ArtistId");
                 String artistName = rs.getString("Name");
                 String genres = rs.getString("Genres");
+                String shortRank = rs.getString("ShortRank");
 
                 // Create a JsonObject based on the data we retrieve from rs
 
@@ -92,6 +99,7 @@ public class SingleArtistServlet extends HttpServlet {
                 jsonObject.addProperty("artist_id", artistId);
                 jsonObject.addProperty("artist_name", artistName);
                 jsonObject.addProperty("genres", genres);
+                jsonObject.addProperty("short_rank", shortRank);
 
                 jsonArray.add(jsonObject);
             }

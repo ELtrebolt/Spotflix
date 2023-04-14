@@ -46,7 +46,7 @@ function handleResult(resultData) {
 
     // append two html <p> created to the h3 body, which will refresh the page
     songInfoElement.append("<p>Song Title: " + resultData[0]["song_title"] + "</p>" +
-        "<p>Rank: " + resultData[0]["song_rank"] + "</p>" +
+        "<p>Short Term Rank: " + resultData[0]["short_rank"] + "</p>" +
         "<p>Album: " + resultData[0]["song_album"] + "</p>" +
         "<p>Date Liked: " + resultData[0]["song_dateLiked"] + "</p>");
 
@@ -56,7 +56,7 @@ function handleResult(resultData) {
     // Find the empty table body by id "artist_table_body"
     let artistTableBodyElement = jQuery("#artist_table_body");
     // Concatenate the html tags with resultData jsonObject to create table rows
-    for (let i = 0; i < Math.min(10, resultData.length); i++) {
+    for (let i = 0; i < resultData.length; i++) {
         let rowHTML = "";
         rowHTML += "<tr>";
         rowHTML += "<th>" +

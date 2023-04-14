@@ -48,36 +48,34 @@ public class SongsServlet extends HttpServlet {
             // Declare our statement
             Statement statement = conn.createStatement();
 
-            String query = "SELECT subquery2.*,\n" +
-                    "    GROUP_CONCAT(subquery2.ArtistId ORDER BY subquery2.ArtistId SEPARATOR ', ') AS ArtistIds,\n" +
-                    "    GROUP_CONCAT(subquery2.ArtistName ORDER BY subquery2.ArtistId SEPARATOR ', ') AS ArtistNames,\n" +
-                    "    (SELECT GROUP_CONCAT(DISTINCT Genre ORDER BY cnt DESC SEPARATOR ', ')\n" +
+            String query = "SELECT s.*,\n" +
+                    "       GROUP_CONCAT(subquery.ArtistId ORDER BY subquery.ArtistId SEPARATOR ', ') as ArtistIds,\n" +
+                    "       GROUP_CONCAT(subquery.ArtistName ORDER BY subquery.ArtistId SEPARATOR ', ') as ArtistNames,\n" +
+                    "       (SELECT GROUP_CONCAT(DISTINCT Genre ORDER BY cnt DESC SEPARATOR ', ')\n" +
                     "    FROM (\n" +
                     "      SELECT goa.Genre, COUNT(*) AS cnt\n" +
                     "      FROM genres_of_artists AS goa\n" +
                     "      JOIN artists AS a ON goa.ArtistId = a.Id\n" +
                     "      JOIN artists_in_songs AS ais ON ais.ArtistId = a.Id\n" +
-                    "      WHERE ais.SongId = subquery2.Id\n" +
+                    "      WHERE ais.SongId = subquery.Id\n" +
                     "      GROUP BY goa.Genre\n" +
                     "      ORDER BY cnt DESC\n" +
                     "      LIMIT 3\n" +
                     "      ) as ArtistGenres\n" +
-                    "    ) AS TopGenres\n" +
+                    "    ) AS TopGenres,\n" +
+                    "       ts.ShortRank AS ShortRank\n" +
                     "FROM (\n" +
-                    "    SELECT s.*, subquery.ArtistId, subquery.ArtistName, subquery.SongRank\n" +
-                    "    FROM (\n" +
-                    "      SELECT s.*, a.Id as ArtistId, a.Name as ArtistName, ts.ShortRank as SongRank,\n" +
+                    "    SELECT s.*, a.Id as ArtistId, a.Name as ArtistName,\n" +
                     "           ROW_NUMBER() OVER (PARTITION BY s.Id ORDER BY a.Id) AS row_num\n" +
-                    "      FROM songs AS s\n" +
-                    "      JOIN artists_in_songs AS ais ON s.Id = ais.SongId\n" +
-                    "      JOIN artists AS a ON a.id = ais.ArtistId \n" +
-                    "      JOIN top_songs AS ts ON s.Id = ts.Id \n" +
-                    "      ) as subquery\n" +
-                    "  JOIN songs AS s ON s.Id = subquery.Id\n" +
-                    "  WHERE row_num <= 3\n" +
-                    " ) as subquery2\n" +
-                    "GROUP BY subquery2.Id\n" +
-                    "ORDER BY subquery2.SongRank IS NULL, subquery2.SongRank ASC\n";
+                    "    FROM songs AS s\n" +
+                    "    JOIN artists_in_songs AS ais ON ais.SongId = s.Id\n" +
+                    "    JOIN artists AS a ON a.id = ais.ArtistId \n" +
+                    "    ) as subquery\n" +
+                    "JOIN songs AS s ON s.Id = subquery.Id\n" +
+                    "JOIN top_songs AS ts ON ts.Id = subquery.Id\n" +
+                    "WHERE row_num <= 3\n" +
+                    "GROUP BY s.Id\n" +
+                    "ORDER BY ShortRank IS NULL, ShortRank ASC;\n";
 
             // Perform the query
             ResultSet rs = statement.executeQuery(query);
@@ -90,7 +88,7 @@ public class SongsServlet extends HttpServlet {
                 String song_title = rs.getString("Title");
                 String song_album = rs.getString("Album");
                 String song_dateLiked = rs.getString("DateLiked");
-                String song_rank = rs.getString("SongRank");
+                String short_rank = rs.getString("ShortRank");
 
                 String artist_names = rs.getString("ArtistNames");
                 String top_genres = rs.getString("TopGenres");
@@ -105,7 +103,7 @@ public class SongsServlet extends HttpServlet {
                 jsonObject.addProperty("artist_names", artist_names);
                 jsonObject.addProperty("artist_ids", artist_ids);
                 jsonObject.addProperty("top_genres", top_genres);
-                jsonObject.addProperty("song_rank", song_rank);
+                jsonObject.addProperty("short_rank", short_rank);
 
                 jsonArray.add(jsonObject);
             }

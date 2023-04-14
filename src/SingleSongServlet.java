@@ -53,11 +53,15 @@ public class SingleSongServlet extends HttpServlet {
             // Get a connection from dataSource
 
             // Construct a query with parameter represented by "?"
-            String query = "SELECT s.*, a.Id as ArtistId, a.Name as Name, " +
-                            "(SELECT GROUP_CONCAT(DISTINCT Genre SEPARATOR ', ')) as Genres, ts.ShortRank as SongRank\n" +
-                                "FROM songs as s, artists as a, artists_in_songs as ais, genres_of_artists as goa, top_songs as ts\n" +
-                                "WHERE a.Id = ais.ArtistId and ais.SongId = s.Id and goa.ArtistId = ais.ArtistId and ts.Id = s.Id and s.Id = ?\n" +
-                                "GROUP BY a.Id;";
+            String query = "SELECT s.*, a.Id AS ArtistId, a.Name AS Name, ts.ShortRank AS ShortRank,\n" +
+                    "   GROUP_CONCAT(DISTINCT goa.Genre SEPARATOR ', ') AS Genres\n" +
+                    "FROM songs AS s\n" +
+                    "JOIN artists_in_songs AS ais ON ais.SongId = s.Id\n" +
+                    "JOIN artists AS a ON a.Id = ais.ArtistId\n" +
+                    "LEFT JOIN genres_of_artists AS goa ON goa.ArtistId = a.Id\n" +
+                    "LEFT JOIN top_songs AS ts ON  ts.Id = s.Id\n" +
+                    "WHERE s.Id = ?\n" +
+                    "GROUP BY a.Id\n";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -78,7 +82,7 @@ public class SingleSongServlet extends HttpServlet {
                 String songTitle = rs.getString("Title");
                 String songAlbum = rs.getString("Album");
                 String songDateLiked = rs.getString("DateLiked");
-                String songRank = rs.getString("songRank");
+                String shortRank = rs.getString("ShortRank");
 
                 String artistId = rs.getString("ArtistId");
                 String artistName = rs.getString("Name");
@@ -94,7 +98,7 @@ public class SingleSongServlet extends HttpServlet {
                 jsonObject.addProperty("artist_id", artistId);
                 jsonObject.addProperty("artist_name", artistName);
                 jsonObject.addProperty("genres", genres);
-                jsonObject.addProperty("song_rank", songRank);
+                jsonObject.addProperty("short_rank", shortRank);
 
                 jsonArray.add(jsonObject);
             }
