@@ -55,10 +55,10 @@ function handleResult(resultData) {
     let songTableBodyElement = jQuery("#song_table_body");
     // Concatenate the html tags with resultData jsonObject to create table rows
     for (let i = 0; i < resultData.length; i++) {
-        console.log(resultData[i]);
+        const short_rank = resultData[i]["short_rank"] ?? 'N/A';
         let rowHTML = "";
         rowHTML += "<tr>";
-        rowHTML += "<th>" + resultData[i]["short_rank"] + "</th>";
+        rowHTML += "<th>" + short_rank + "</th>";
         rowHTML += "<th>" +
                     // Add a link to single-song.html with id passed with GET url parameter
                     '<a href="single-song.html?id=' + resultData[i]['song_id'] + '">'
