@@ -44,9 +44,11 @@ function handleResult(resultData) {
     // find the empty h3 body by id "song_info"
     let songInfoElement = jQuery("#song_info");
 
+    const shortTermRank = resultData[0]["short_rank"] ?? 'N/A';
+
     // append two html <p> created to the h3 body, which will refresh the page
     songInfoElement.append("<p>Song Title: " + resultData[0]["song_title"] + "</p>" +
-        "<p>Short Term Rank: " + resultData[0]["short_rank"] + "</p>" +
+        "<p>Short Term Rank: " + shortTermRank + "</p>" +
         "<p>Album: " + resultData[0]["song_album"] + "</p>" +
         "<p>Date Liked: " + resultData[0]["song_dateLiked"] + "</p>");
 
