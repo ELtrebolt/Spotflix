@@ -8,6 +8,9 @@ Spotify's Web API to construct the MySQL database around data specific to one ou
 
 ### Group Member Contributions:
 #### Ethan Lee:
+- Collected data with Java through the Spotify API
+- Managed the setup of the SQL database
+- Implemented SQL queries for Songs Page
 
 #### David Dao:
 
