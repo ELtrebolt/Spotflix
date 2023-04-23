@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS espotify;
+USE espotify;
+
 CREATE TABLE IF NOT EXISTS songs(
                Id varchar(22) primary key,
                Title varchar(200) CHARSET utf8mb4 COLLATE utf8mb4_0900_ai_ci not null,
@@ -36,10 +39,3 @@ CREATE TABLE IF NOT EXISTS top_songs(
 	   LongRank INT,
        FOREIGN KEY (Id) REFERENCES songs(Id)
            );
-
-DELETE FROM top_songs;
-DELETE FROM genres_of_artists;
-DELETE FROM artists_in_songs;
-DELETE FROM genres;
-DELETE FROM artists;
-DELETE FROM songs;

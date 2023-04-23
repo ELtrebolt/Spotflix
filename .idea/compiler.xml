@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="cs122b-project1-api-example" />
+        <module name="s23-122b-gbros-project1" />
       </profile>
     </annotationProcessing>
   </component>
