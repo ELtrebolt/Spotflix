@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.net.URI;
 
 public class SpotifyClient {
-    private static final String CLIENT_ID = "b907e704adb54999aecda11320e53df0";
-    private static final String CLIENT_SECRET = "31fa8e2883b645d98b5f171ad3d8c7cf";
+    private static final String CLIENT_ID = "MYID";
+    private static final String CLIENT_SECRET = "MYSECRET";
     private static final String REDIRECT_URI = "http://localhost:8080/s23_122b_gbros_project1_war/api/setup";
     private static final String SCOPES = "user-library-read user-top-read";
     private static String code = "";

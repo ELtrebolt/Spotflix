@@ -35,7 +35,7 @@ INTO TABLE top_songs
 FIELDS TERMINATED BY ',' ENCLOSED BY '\"'
 LINES TERMINATED BY '\r\n'
 (id, @vtwo, @vthree, @vfour)
-SET 
+SET
 ShortRank = NULLIF(@vtwo,0),
 MedRank = NULLIF(@vthree,0),
 LongRank = NULLIF(@vfour,0);
