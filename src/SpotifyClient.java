@@ -21,6 +21,7 @@ import tech.tablesaw.api.Table;
 import org.apache.hc.core5.http.ParseException;
 import java.io.IOException;
 
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -39,9 +40,10 @@ import java.net.URI;
 public class SpotifyClient {
     private static final String CLIENT_ID = "MY_ID";
     private static final String CLIENT_SECRET = "MY_SECRET";
-    private static final String REDIRECT_URI = "http://localhost:8080/s23_122b_gbros_project1_war/api/setup";
+    private static final String REDIRECT_URI = "http://localhost:8080/s23_122b_gbros_project1_war/setup.html";
     private static final String SCOPES = "user-library-read user-top-read";
     private static String code = "";
+    private static PrintWriter out;
 
     public static SpotifyApi spotifyApi = new SpotifyApi.Builder()
             .setClientId(CLIENT_ID)
@@ -64,6 +66,10 @@ public class SpotifyClient {
         code = codeFromURL;
     }
 
+    public static void setPrinter(PrintWriter writer) {
+        out = writer;
+    }
+
     // Auth Part 2 = Get Access & Refresh Token from Auth Code
     public static void setAccessToken() {
         AuthorizationCodeRequest authorizationCodeRequest = spotifyApi.authorizationCode(code).build();
@@ -75,7 +81,8 @@ public class SpotifyClient {
             spotifyApi.setRefreshToken(credentials.getRefreshToken());
 
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            // System.out.println("Error: " + e.getMessage());
+            out.write("Error: " + e.getMessage());
+            out.flush();
         }
     }
 
@@ -90,7 +97,8 @@ public class SpotifyClient {
 
             return trackPaging.getTotal();
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            // System.out.println("Error: " + e.getMessage());
+            out.write("Error: " + e.getMessage());
+            out.flush();
         }
         return -1;
     }
@@ -147,7 +155,6 @@ public class SpotifyClient {
             }
         }
         Table table = Table.create("Artists", idCol, nameCol);
-        // System.out.println(table.first(1));
         return artistsTable.append(table);
     }
 
@@ -167,7 +174,6 @@ public class SpotifyClient {
             }
         }
         Table table = Table.create("ArtistsInSongs", artistCol, songCol);
-        // System.out.println(table.first(1));
         return artistsInSongsTable.append(table);
     }
 
@@ -225,14 +231,16 @@ public class SpotifyClient {
                 }
             }
             catch (IOException | SpotifyWebApiException | ParseException e) {
-                // System.out.println("Error: " + e.getMessage());
+                out.write("Error: " + e.getMessage());
+                out.flush();
             }
             index += 50;
-            // System.out.printf("ArtistSubset Index %s\n", index);
+            String update = String.format("ArtistSubset Index %s\n", index);
+            out.write(update);
+            out.flush();
         }
 
         Table table = Table.create("ArtistsInSongs", genreCol, artistCol);
-        // System.out.println(table.first(1));
         return genresOfArtistsTable.append(table);
     }
 
@@ -267,13 +275,12 @@ public class SpotifyClient {
                     rankCols[j].append(i+1);
                 }
                 Table table = Table.create(terms[j], idCols[j], rankCols[j]);
-                // System.out.println(table.first(4));
                 topSongsTable = topSongsTable.joinOn("TrackId")
                         .fullOuter(table, "TrackId");
             }
             catch (IOException | SpotifyWebApiException | ParseException e) {
-                // System.out.println("Error: " + e.getMessage());
-                e.printStackTrace();
+                out.write("Error: " + e.getMessage());
+                out.flush();
             }
         }
         for(int j = 0; j<rankCols.length; j++)
@@ -338,11 +345,13 @@ public class SpotifyClient {
                 }
             }
             catch (IOException | SpotifyWebApiException | ParseException e) {
-                // System.out.println("Error: " + e.getMessage());
+                out.write("Error: " + e.getMessage());
+                out.flush();
             }
 
             index += 50;
-            System.out.printf("SavedTracks Index %s\n", index);
+            out.write(String.format("SavedTracks Index %s\n", index));
+            out.flush();
         }
 
         StringColumn genreCol2 = StringColumn.create("Name", genresOfArtistsTable.stringColumn("Genre").unique().asObjectArray());

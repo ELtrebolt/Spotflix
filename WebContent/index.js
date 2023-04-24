@@ -1,80 +1,74 @@
-/**
- * This example is following frontend and backend separation.
- *
- * Before this .js is loaded, the html skeleton is created.
- *
- * This .js performs two steps:
- *      1. Use jQuery to talk to backend API to get the json data.
- *      2. Populate the data to correct html elements.
- */
-
+let cart = $("#cart");
 
 /**
- * Handles the data returned by the API, read the jsonObject and populate data into html elements
- * @param resultData jsonObject
+ * Handle the data returned by IndexServlet
+ * @param resultDataString jsonObject, consists of session info
  */
-function handleSongResult(resultData) {
-    // console.log("handleSongResult: populating song table from resultData");
+function handleSessionData(resultDataString) {
+    let resultDataJson = JSON.parse(resultDataString);
 
-    // Populate the song table
-    // Find the empty table body by id "song_table_body"
-    let songTableBodyElement = jQuery("#song_table_body");
-    // console.log(resultData.length)
-    // Iterate through resultData, no more than N entries
-    for (let i = 0; i < Math.min(20, resultData.length); i++) {
-        // console.log(i)
-        const artist_ids = resultData[i]['artist_ids'].split(', ');
-        const artist_names = resultData[i]['artist_names'].split(', ');
+    console.log("handle session response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["sessionID"]);
 
-        // Concatenate the html tags with resultData jsonObject
-        let rowHTML = "";
-        rowHTML += "<tr>";
-        rowHTML += "<th>" + resultData[i]["short_rank"] + "</th>";
-        rowHTML +=
-            "<th>" +
-            // Add a link to single-song.html with id passed with GET url parameter
-            '<a href="single-song.html?id=' + resultData[i]['song_id'] + '">'
-            + resultData[i]["song_title"] +     // display song_title for the link text
-            '</a>' +
-            "</th>";
-        rowHTML += "<th>" + resultData[i]["song_album"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["song_dateLiked"] + "</th>";
-        rowHTML += "<th>";
+    // show the session information 
+    $("#sessionID").text("Session ID: " + resultDataJson["sessionID"]);
+    $("#lastAccessTime").text("Last access time: " + resultDataJson["lastAccessTime"]);
 
-        artist_ids.forEach((id, index) => {
-            const artist_name = artist_names[index];
-            // Add a link to single-artist.html with id passed with GET url parameter
-            rowHTML += '<a href="single-artist.html?id=' + artist_ids[index] + '">'
-                        + artist_name + '</a>'    // display artist_name for the link text
-
-            if (index !== artist_ids.length - 1) {
-                rowHTML += ', '
-            }
-        });
-
-        rowHTML += "</th>";
-            // Add a link to single-song.html with id passed with GET url parameter
-            // '<a href="single-artist.html?id=' + resultData[i]['artist_ids'] + '">'
-            // + resultData[i]["artist_names"] +     // display artist_name for the link text
-            // '</a>' +
-            // "</th>";
-        rowHTML += "<th>" + resultData[i]["top_genres"] + "</th>";
-        rowHTML += "</tr>";
-
-        // Append the row created to the table body, which will refresh the page
-        songTableBodyElement.append(rowHTML);
-    }
+    // show cart information
+    handleCartArray(resultDataJson["previousItems"]);
 }
 
+/**
+ * Handle the items in item list
+ * @param resultArray jsonObject, needs to be parsed to html
+ */
+function handleCartArray(resultArray) {
+    console.log(resultArray);
+    let item_list = $("#item_list");
+    // change it to html list
+    let res = "<ul>";
+    for (let i = 0; i < resultArray.length; i++) {
+        // each item will be in a bullet point
+        res += "<li>" + resultArray[i] + "</li>";
+    }
+    res += "</ul>";
+
+    // clear the old array and show the new array in the frontend
+    item_list.html("");
+    item_list.append(res);
+}
 
 /**
- * Once this .js is loaded, following scripts will be executed by the browser
+ * Submit form content with POST method
+ * @param cartEvent
  */
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    cartEvent.preventDefault();
 
-// Makes the HTTP GET request and registers on success callback function handleSongResult
-jQuery.ajax({
-    dataType: "json", // Setting return data type
-    method: "GET", // Setting request method
-    url: "api/songs", // Setting request url, which is mapped by SongsServlet in Songs.java
-    success: (resultData) => handleSongResult(resultData) // Setting callback function to handle data returned successfully by the SongsServlet
+    $.ajax("api/index", {
+        method: "POST",
+        data: cart.serialize(),
+        success: resultDataString => {
+            let resultDataJson = JSON.parse(resultDataString);
+            handleCartArray(resultDataJson["previousItems"]);
+        }
+    });
+
+    // clear input form
+    cart[0].reset();
+}
+
+$.ajax("api/index", {
+    method: "GET",
+    success: handleSessionData
 });
+
+// Bind the submit action of the form to a event handler function
+cart.submit(handleCartInfo);

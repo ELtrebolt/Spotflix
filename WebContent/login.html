@@ -6,14 +6,28 @@
     <title>Login to Fablix</title>
 </head>
 <body>
-<h2>Login to Fablix</h2>
+
+<h2>Sign In to Your Spotify Account to see Custom Data</h2>
+<form id="spotify_login" method="post">
+    <input type="submit" value="Sign In to Spotify">
+</form>
+
 <!-- Set the method to POST to avoid showing the username/password in the URL
      The default action is disabled to allow your own implementation. -->
-<!--<form id="login_form" method="post" action="#">-->
-<!--    <input type="submit" value="Login">-->
-<!--</form>-->
-<button id="login-button" onclick="redirectUserToSpotify()" >Log in with Spotify</button>
-
+<h2>Login to Guest Account to see Sample Data</h2>
+<form id="login_form" method="post">
+    <label><b>Username</b></label>
+    <label>
+        <input name="username" placeholder="Enter Username" type="text">
+    </label>
+    <br>
+    <label><b>Password</b></label>
+    <label>
+        <input name="password" placeholder="Enter Password" type="password">
+    </label>
+    <br>
+    <input type="submit" value="Login">
+</form>
 
 <div id="login_error_message"></div>
 
