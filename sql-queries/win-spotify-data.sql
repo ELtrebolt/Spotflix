@@ -4,7 +4,7 @@ FIELDS TERMINATED BY ',' ENCLOSED BY '\"'
 LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS
 (Id,Title,Album,@DateLiked)
-SET DateLiked = STR_TO_DATE(@DateLiked, '%m/%d/%Y');
+SET DateLiked = STR_TO_DATE(@DateLiked, '%Y-%m-%d');
 
 LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/Artists.csv'
 INTO TABLE artists

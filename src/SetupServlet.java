@@ -53,6 +53,7 @@ public class SetupServlet extends HttpServlet {
                 if(!query.isEmpty())
                 {
                     query = query.replace("FIELDS", " FIELDS");
+                    query = query.replace("SET", "SET ");
                     sqlCodeRan += query + "\n\t   ";
                     if(t.equals("executeUpdate"))
                     {
@@ -84,15 +85,19 @@ public class SetupServlet extends HttpServlet {
                 // Create & Clear SQL Tables
                 String deleteSql = "C:/Users/Ethan/Documents/cs122b/project2/sql-queries/create_table.sql";
                 String res1 = runSqlFile(conn, deleteSql, "executeUpdate");
+
+                SpotifyClient.setCode(code);
+                SpotifyClient.setAccessToken();
+
+                SpotifyClient.getUsersSavedTracks_Sync();
+                SpotifyClient.getUsersTopSongs();
+
                 // Load SQL Tables
                 String loadSql = "C:/Users/Ethan/Documents/cs122b/project2/sql-queries/win-spotify-data.sql";
                 String res2 = runSqlFile(conn, loadSql, "execute");
                 // Update Table Counts
                 String updateSql = "C:/Users/Ethan/Documents/cs122b/project2/sql-queries/update_table_counts.sql";
                 String res3 = runSqlFile(conn, updateSql, "execute");
-
-                SpotifyClient.setCode(code);
-                SpotifyClient.setAccessToken();
 
                 JsonObject responseJsonObject = new JsonObject();
 
@@ -104,7 +109,7 @@ public class SetupServlet extends HttpServlet {
                 responseJsonObject.addProperty("UpdateTables", res3);
                 response.getWriter().write(responseJsonObject.toString());
 
-                // response.sendRedirect("../index.html");
+                response.sendRedirect("../index.html");
             }
             catch(Exception e){
                 JsonObject responseJsonObject = new JsonObject();
