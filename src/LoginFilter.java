@@ -31,7 +31,7 @@ public class LoginFilter implements Filter {
 
         // Redirect to login page if the "user" attribute doesn't exist in session
         if (httpRequest.getSession().getAttribute("user") == null) {
-            System.out.println("Filter to login.html");
+            // System.out.println("Filter to login.html");
             // httpResponse.sendRedirect("login.html");
         } else {
             chain.doFilter(request, response);
@@ -46,7 +46,7 @@ public class LoginFilter implements Filter {
          */
         boolean end = allowedURIs.stream().anyMatch(requestURI.toLowerCase()::endsWith);
         boolean contains = allowedURIs.stream().anyMatch(requestURI.toLowerCase()::contains);
-        System.out.println(requestURI.toLowerCase());
+        // System.out.println(requestURI.toLowerCase());
         return end || contains;
     }
 

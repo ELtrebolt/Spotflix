@@ -1,22 +1,22 @@
-let newUrl = window.location.href.replace("setup.html?", "api/setup?")
-window.location.replace(newUrl);
-
-let source = new EventSource("api/setup");
-source.onmessage = function(event) {
-    $("#logs").append(event.data);
-};
-
-function handleSessionData(resultDataString) {
-    let resultDataJson = JSON.parse(resultDataString);
-    if (resultDataJson["status"] === "success") {
-        window.location.replace("songs-list.html");
-    } else {
-        $("#setup_error_message").text(resultDataJson["error"]);
-    }
-}
+// let newUrl = window.location.href.replace("setup.html?", "api/setup?")
+// window.location.replace(newUrl);
 
 // Make the initial AJAX call to start the setup process
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
 $.ajax("api/setup", {
     method: "GET",
-    success: handleSessionData,
+    data: {code: code},
+    success: completeSetup
 });
+
+function completeSetup() {
+    window.location.replace("song-list.html");
+}
+
+let source = new EventSource(`api/setup?code=${code}`);
+source.onmessage = (event) => {
+    $("#logs").html($("#logs").html() + event.data + "<br>");
+    // $("#logs").append(event.data);
+    // $("#logs").append(`\n`);
+};

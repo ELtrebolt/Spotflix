@@ -38,8 +38,8 @@ import tech.tablesaw.io.csv.CsvWriteOptions;
 import java.net.URI;
 
 public class SpotifyClient {
-    private static final String CLIENT_ID = "MY_ID";
-    private static final String CLIENT_SECRET = "MY_SECRET";
+    private static final String CLIENT_ID = "b907e704adb54999aecda11320e53df0";
+    private static final String CLIENT_SECRET = "31fa8e2883b645d98b5f171ad3d8c7cf";
     private static final String REDIRECT_URI = "http://localhost:8080/s23_122b_gbros_project1_war/setup.html";
     private static final String SCOPES = "user-library-read user-top-read";
     private static String code = "";
@@ -81,7 +81,8 @@ public class SpotifyClient {
             spotifyApi.setRefreshToken(credentials.getRefreshToken());
 
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            out.write("Error: " + e.getMessage());
+            out.write("event: message\n");
+            out.write("data:" + e.getMessage() + "\n\n");
             out.flush();
         }
     }
@@ -97,7 +98,8 @@ public class SpotifyClient {
 
             return trackPaging.getTotal();
         } catch (IOException | SpotifyWebApiException | ParseException e) {
-            out.write("Error: " + e.getMessage());
+            out.write("event: message\n");
+            out.write("data:" + e.getMessage() + "\n\n");
             out.flush();
         }
         return -1;
@@ -231,12 +233,14 @@ public class SpotifyClient {
                 }
             }
             catch (IOException | SpotifyWebApiException | ParseException e) {
-                out.write("Error: " + e.getMessage());
+                out.write("event: message\n");
+                out.write("data:" + e.getMessage() + "\n\n");
                 out.flush();
             }
             index += 50;
             String update = String.format("ArtistSubset Index %s\n", index);
-            out.write(update);
+            out.write("event: message\n");
+            out.write("data:" + update + "\n\n");
             out.flush();
         }
 
@@ -279,7 +283,8 @@ public class SpotifyClient {
                         .fullOuter(table, "TrackId");
             }
             catch (IOException | SpotifyWebApiException | ParseException e) {
-                out.write("Error: " + e.getMessage());
+                out.write("event: message\n");
+                out.write("data:" + e.getMessage() + "\n\n");
                 out.flush();
             }
         }
@@ -345,12 +350,15 @@ public class SpotifyClient {
                 }
             }
             catch (IOException | SpotifyWebApiException | ParseException e) {
-                out.write("Error: " + e.getMessage());
+                out.write("event: message\n");
+                out.write("data:" + e.getMessage() + "\n\n");
                 out.flush();
             }
 
             index += 50;
-            out.write(String.format("SavedTracks Index %s\n", index));
+            String s = String.format("SavedTracks Index %s\n", index);
+            out.write("event: message\n");
+            out.write("data:" + s + "\n\n");
             out.flush();
         }
 

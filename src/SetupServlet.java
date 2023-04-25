@@ -72,12 +72,10 @@ public class SetupServlet extends HttpServlet {
     }
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         PrintWriter out = response.getWriter();
-        // response.setContentType("text/plain");
-        response.setContentType("text/event-stream");
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+//        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         response.setHeader("Pragma", "no-cache");
         response.setHeader("Expires", "0");
-//        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Origin", "*");
 //        response.setHeader("Cache-Control", "no-cache");
 
         if (request.getSession().getAttribute("setup") == null) {
@@ -122,6 +120,8 @@ public class SetupServlet extends HttpServlet {
             }
             else
             {
+                response.setContentType("text/event-stream");
+                 response.setCharacterEncoding("UTF-8");
                 try (Connection conn = dataSource.getConnection()) {
                     // Create & Clear SQL Tables
                     String deleteSql = "C:/Users/Ethan/Documents/cs122b/project2/sql-queries/create_table.sql";
@@ -141,25 +141,30 @@ public class SetupServlet extends HttpServlet {
                     String updateSql = "C:/Users/Ethan/Documents/cs122b/project2/sql-queries/update_table_counts.sql";
                     String res3 = runSqlFile(conn, updateSql, "execute");
 
-                    JsonObject responseJsonObject = new JsonObject();
-
-                    responseJsonObject.addProperty("status", "success");
-                    responseJsonObject.addProperty("CreateTables", res1);
-                    responseJsonObject.addProperty("LoadTables", res2);
-                    responseJsonObject.addProperty("UpdateTables", res3);
-                    out.write(responseJsonObject.toString());
+//                    JsonObject responseJsonObject = new JsonObject();
+//                    responseJsonObject.addProperty("status", "success");
+//                    responseJsonObject.addProperty("CreateTables", res1);
+//                    responseJsonObject.addProperty("LoadTables", res2);
+//                    responseJsonObject.addProperty("UpdateTables", res3);
+//                    out.write(responseJsonObject.toString());
+                    out.write("event: message\n");
+                    out.write("data:SetupComplete" + "\n\n");
+                    out.flush();
 
                     System.out.println("Custom Complete - redirect to Song List");
-                    response.sendRedirect("../song-list.html");
+                    // response.sendRedirect("../song-list.html");
                 }
                 catch(Exception e){
                     JsonObject responseJsonObject = new JsonObject();
                     responseJsonObject.addProperty("status", "failed");
                     responseJsonObject.addProperty("error", e.getMessage());
-                    out.write(responseJsonObject.toString());
+                    out.write(responseJsonObject.toString() + "\n\n");
                 }
                 finally {
                     out.close();
+//                    response.setHeader("Access-Control-Allow-Origin", "*");
+//                    response.setHeader("Cache-Control", "no-cache");
+//                    response.setHeader("Pragma", "no-cache");
                 }
             }
         }
